@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// Com este client eu consigo (se as informação num array ou objeto).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// UUID - Uma sequencia numérica de vários caracteres pra se virtualmente sem chance de colisão
+// ULID - Uma sequencia alfanumérica virtualmente sem chance de colisao
+// Salt - Adicionar um conjunto de caracteres para dificultar a colisão ou identificao
+// post_user_data
+model Project {
+  id Int @id @default(autoincrement())
+  title String @unique
+  description String
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  title String @default("Task")
+  created_at DateTime @default(now()) //Isso aqui me resolve o problema de timezone
+  updated_at DateTime? @updatedAt // ? é nullable (NULL)
+  deleted_at DateTime? //Soft delete
+  //Restaura deleted_at = null
+  //exclui deleted_at = now()
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String @db.VarChar(64)
+}
+
+// npx prisma migrate dev -name nome_da_migration
+// Se já existir a tabela no banco
+// O prisma vai tentar alterar ela
+// E caso por algum motivo os dados existentes atrapalhem a operação vai ser cancelada
